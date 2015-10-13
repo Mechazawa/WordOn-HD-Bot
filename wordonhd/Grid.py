@@ -1,7 +1,7 @@
 class Grid(object):
     _modifiers = {
-        '1': lambda x: x.score * 2,
-        '2': lambda x: x.score * 3,
+        '1': lambda x: x * 2,
+        '2': lambda x: x * 3,
         '4': lambda x: x + 10,
     }
 
@@ -13,7 +13,7 @@ class Grid(object):
     def score(self, word):
         score = 0
         for i in range(len(word)):
-            score += self._grid_mod[i](word.value)
+            score += self._grid_mod[i](word[i].value)
 
         return score
 

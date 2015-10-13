@@ -14,7 +14,7 @@ class Word(object):
         value = self._grid.score(self._letters)
         missing = list(filter(lambda x: x not in self._letters, self._wordons))
 
-        value -= sum(map(lambda x: x.value))
+        value -= sum(map(lambda x: x.value, missing))
 
         if len(missing) == 0:
             value *= 2
@@ -36,8 +36,12 @@ class Word(object):
 
                 for i in range(len(word)):
                     if word[i] in cache or '#' in cache:
-                        order.append(i)
-                        cache.pop(i)
+                        indexes = [j for j, k in enumerate(letters_raw) if k == word[i]]
+                        for j in indexes:
+                            if j not in order:
+                                order.append(j)
+                                break
+                        cache.pop(cache.index(word[i]))
                     else:
                         valid = False
 
@@ -53,3 +57,6 @@ class Word(object):
 
         words.sort(reverse=True, key=lambda x: x.value)
         return words
+
+    def __str__(self):
+        return ','.join(l.__str__() for l in self._letters)
