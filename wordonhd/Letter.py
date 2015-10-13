@@ -16,3 +16,8 @@ class Letter(object):
     @property
     def value(self):
         return list(filter(lambda x: self.letter in x[0], self._values.items()))[0][1]
+
+    @staticmethod
+    def from_raw(data):
+        data = data.split(',')
+        return list(map(Letter, data))
