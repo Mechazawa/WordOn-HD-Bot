@@ -37,12 +37,15 @@ class Word(object):
 
                 for i in range(len(word)):
                     if word[i] in cache or '#' in cache:
-                        indexes = [j for j, k in enumerate(letters_raw) if k == word[i]]
+                        indexes = sorted([j for j, k in enumerate(letters_raw)
+                                          if k == word[i] or k == '#'], reverse=True)
                         for j in indexes:
                             if j not in order:
                                 order.append(j)
                                 break
-                        cache.pop(cache.index(word[i]))
+
+                        target = word[i] if word[i] in cache else '#'
+                        cache.pop(cache.index(target))
                     else:
                         valid = False
 
