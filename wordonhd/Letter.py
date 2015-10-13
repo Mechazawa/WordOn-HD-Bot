@@ -40,6 +40,6 @@ class Letter(object):
     def __repr__(self):
         return "<Letter '{}({})' val '{}'>".format(self.letter, self.real, self.value)
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         assert isinstance(other, Letter)
         return self.wordon == other.wordon and self.letter == other.letter
