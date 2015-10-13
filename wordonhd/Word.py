@@ -24,6 +24,7 @@ class Word(object):
     def find_all(letters, grid, locale='nl3'):
         words = []
         file = 'dictionary/{}.lang'.format(locale)
+        letters.sort(key=lambda x: x.weight, reverse=True)
         letters_raw = list(map(lambda x: x.letter, letters))
         wordons = list(filter(lambda x: x.wordon, letters))
 
