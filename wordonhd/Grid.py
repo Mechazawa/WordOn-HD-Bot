@@ -17,12 +17,12 @@ class Grid(object):
 
         return score
 
-    def new_wordle(self, word):
+    def new_wordon(self, word):
         index = [i for i, l in enumerate(self._grid) if l is '3']
-        wordles = []
+        wordons = []
 
         for i in index:
             if len(word) >= index:
-                wordles.append(word[i])
+                wordons.append(word[i])
 
-        return wordles
+        return wordons
