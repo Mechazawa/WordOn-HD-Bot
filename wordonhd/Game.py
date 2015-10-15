@@ -11,13 +11,31 @@ class Game(object):
         data = {
             'authToken': parent.authtoken,
             'sid': ScreenId.GAME_VS_PLAYER,
-            'gid': self.gamedata['id'],
+            'gid': self.id,
             'cycle': int(self.gamedata['cycle']) + 1,
             'newchats': 0,
         }
 
         resp = requests.post(Session.SERVER_LISTEN, data).json()
-        self.instance = resp.get('game', {})
+        self.instance = resp['game']
 
-    def update(self, data):
-        pass
+    @property
+    def id(self):
+        return self.gamedata['id']
+
+    def play(self):
+        if self.gamedata['turnUserId'] != self.gamedata['yourId']:
+            return
+        if int(self.gamedata['state']) != 1:
+            return
+
+        print('skipping: {}'.format(self.gamedata['dictionaryId']))
+
+    def swap(self):
+        data = {
+            'authToken': self.parent.authtoken,
+            'gameId': self.id,
+        }
+
+        url = "{}/game/swap".format(Session.SERVER)
+        requests.post(url, data)
