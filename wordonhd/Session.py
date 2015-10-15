@@ -40,6 +40,7 @@ class Session(object):
     SERVER_LISTEN = 'http://listen.wordonhd.com/listen'
     SALT = 'ohf87ewyr87wfhj'
 
+    overview_id = 0
     instances = {}
 
     def __init__(self, authtoken):
@@ -77,15 +78,14 @@ class Session(object):
     def listen(self, on_list=None, on_overview=None, on_invite=None):
         data = {
             'authToken': self.authtoken,
-            'overviewId': 0,
+            'overviewId': self.overview_id,
             'sid': ScreenId.GAME_OVERVIEW,
         }
+        self.overview_id += 1
 
         while True:
             resp = requests.post(self.SERVER_LISTEN, data, timeout=None).json()
-
-            if 'gameList' not in resp:
-                print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
+            print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
 
             if 'gameList' in resp:
                 (on_list or self.parse_game_list)(resp['gameList'])
