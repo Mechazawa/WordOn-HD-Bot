@@ -67,8 +67,12 @@ class Session(object):
             'timestamp': 0
         }
 
-        resp = requests.post('{}/game/resume'.format(self.SERVER), data=data)
-        # TODO
+        resp = requests.post('{}/game/resume'.format(self.SERVER), data=data).json()
+        print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
+
+        if 'invitesPending' in resp:
+            for invite in resp['invitesPending']:
+                self.invite_accept(invite)
 
     def listen(self, on_list=None, on_overview=None, on_invite=None):
         data = {
@@ -79,7 +83,9 @@ class Session(object):
 
         while True:
             resp = requests.post(self.SERVER_LISTEN, data, timeout=None).json()
-            print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
+
+            if 'gameList' not in resp:
+                print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
 
             if 'gameList' in resp:
                 (on_list or self.parse_game_list)(resp['gameList'])
@@ -91,7 +97,8 @@ class Session(object):
 
     def invite_accept(self, pending):
         url = "{}/game/invitation".format(self.SERVER)
-        key = 'id' if 'displayName' in pending else 'invId'
+        key = 'id' if 'displayname' in pending else 'invId'
+        print('accepting invite from ' + pending[key])
         data = {
             'gameInviteId': pending[key],
             'action': 'accept',
@@ -103,10 +110,10 @@ class Session(object):
 
     def parse_game_list(self, data):
         for game in data:
-            if +game['state'] != 1:
+            if int(game['state']) != 1:
                 continue
 
-            self.instances[game['id']] = Game(self, data)
+            self.instances[game['id']] = Game(self, game)
 
     def handle_overview(self, data):
         self.instances[data['id']].update(data)
