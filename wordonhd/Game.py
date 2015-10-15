@@ -2,6 +2,7 @@ import requests
 from Word import Word
 from Letter import Letter
 from Grid import Grid
+from time import sleep
 
 
 class Game(object):
@@ -41,22 +42,35 @@ class Game(object):
     def locale(self):
         return self.gamedata["dictionaryId"]
 
-    def play(self):
+    @property
+    def my_turn(self):
         if self.gamedata['turnUserId'] != self.gamedata['yourId']:
-            return
+            return False
         if int(self.gamedata['state']) != 1:
+            return False
+
+        return True
+
+    def play(self):
+        if not self.my_turn:
             return
 
         words = Word.find_all(self.letters, self.grid, self.locale)
         if len(words) == 0:
             self.swap()
         else:
-            if self.submit_word(words[0]):
-                return
+            for word in words:
+                if self.submit_word(word):
+                    return
+            self.swap()
 
-    def submit_word(self, word):
+    def submit_word(self, word, wait=3):
         assert isinstance(word, Word)
-        print('playing ' + word.__str__())
+        if wait > 0:
+            print('Waiting {}s'.format(wait))
+            sleep(wait)
+        print('playing {} for {} points against {}'
+              .format(word.__str__(), word.value, self.gamedata['otherName']))
 
         data = {
             'authToken': self.parent.authtoken,
@@ -67,11 +81,12 @@ class Game(object):
         url = "{}/game/play".format(self.SERVER)
 
         res = requests.post(url, data).json()
-        print(res)
-        if 'game' in res:
+        valid = 'game' in res
+
+        if valid:
             self.instance = res['game']
 
-        return 'game' in res
+        return valid
 
     def swap(self):
         data = {

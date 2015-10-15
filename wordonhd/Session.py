@@ -1,10 +1,12 @@
 from enum import Enum
+from logging import Logger
 import requests
 from string import ascii_letters, digits
 from random import choice
 from hashlib import md5
 from Game import Game
 import json
+from threading import Thread
 
 
 def _random_string(length=16, pool=ascii_letters + digits):
@@ -44,6 +46,7 @@ class Session(object):
     instances = {}
 
     def __init__(self, authtoken):
+        self.logger = Logger('WordOn')
         self.authtoken = authtoken
 
     @staticmethod
@@ -63,6 +66,8 @@ class Session(object):
         return Session(resp.json()['user']['authToken'])
 
     def resume(self):
+        self.logger.info('Resuming connection')
+
         data = {
             'authToken': self.authtoken,
             'timestamp': 0
@@ -75,25 +80,27 @@ class Session(object):
                 self.invite_accept(invite)
 
     def listen(self, on_list=None, on_overview=None, on_invite=None):
-        data = {
-            'authToken': self.authtoken,
-            'overviewId': self.overview_id,
-            'sid': ScreenId.GAME_OVERVIEW,
-        }
-        self.overview_id += 1
-
         while True:
-            resp = requests.post(self.SERVER_LISTEN, data, timeout=None).json()
+            data = {
+                'authToken': self.authtoken,
+                'overviewId': self.overview_id,
+                'sid': ScreenId.GAME_OVERVIEW,
+            }
+            self.overview_id += 1
 
+            #print('beep')
+            resp = requests.post(self.SERVER_LISTEN, data, timeout=None).json()
+            #print(json.dumps(resp, indent=4))
             if 'gameList' in resp:
                 (on_list or self.parse_game_list)(resp['gameList'])
             if 'gameOverview' in resp:
+                print('overview')
                 (on_overview or self.handle_overview)(resp['gameOverview'])
             if 'invite' in resp:
                 func = on_invite or self.invite_accept
                 list(map(func, resp['invite']['invitesPending']))
 
-            for id, game in self.instances.items():
+            for _, game in self.instances.items():
                 game.play()
 
     def invite_accept(self, pending):
