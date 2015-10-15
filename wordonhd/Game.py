@@ -1,4 +1,3 @@
-from Session import Session, ScreenId
 import requests
 from Word import Word
 from Letter import Letter
@@ -6,20 +5,23 @@ from Grid import Grid
 
 
 class Game(object):
+
+    SERVER = 'http://game.wordonhd.com'
+    SERVER_LISTEN = 'http://listen.wordonhd.com/listen'
+
     def __init__(self, parent, data):
-        assert isinstance(parent, Session)
         self.parent = parent
         self.gamedata = data
 
         data = {
             'authToken': parent.authtoken,
-            'sid': ScreenId.GAME_VS_PLAYER,
+            'sid': 9,
             'gid': self.id,
             'cycle': int(self.gamedata['cycle']) + 1,
             'newchats': 0,
         }
 
-        resp = requests.post(Session.SERVER_LISTEN, data).json()
+        resp = requests.post(self.SERVER_LISTEN, data).json()
         self.instance = resp['game']
 
     @property
@@ -56,6 +58,7 @@ class Game(object):
 
     def submit_word(self, word):
         assert isinstance(word, Word)
+        print('playing ' + word.__str__())
 
         data = {
             'authToken': self.parent.authtoken,
@@ -63,7 +66,7 @@ class Game(object):
             'bestWord': word.__str__().replace('!', ''),
             'gameId': self.id,
         }
-        url = "{}/game/play".format(Session.SERVER)
+        url = "{}/game/play".format(self.SERVER)
 
         res = requests.post(url, data).json()
         if 'game' in res:
@@ -77,5 +80,6 @@ class Game(object):
             'gameId': self.id,
         }
 
-        url = "{}/game/swap".format(Session.SERVER)
+        print('swapping')
+        url = "{}/game/swap".format(self.SERVER)
         requests.post(url, data)
