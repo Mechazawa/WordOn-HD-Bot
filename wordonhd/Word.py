@@ -21,7 +21,7 @@ class Word(object):
         return value
 
     @staticmethod
-    def find_all(letters, grid, locale='nl3'):
+    def find_all(letters, grid, locale='nl'):
         words = []
         file = 'dictionary/{}.lang'.format(locale)
         letters.sort(key=lambda x: x.weight, reverse=True)
