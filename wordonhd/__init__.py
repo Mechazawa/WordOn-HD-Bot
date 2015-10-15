@@ -1,4 +1,4 @@
-from Game import Game
+from Session import Session
 from Letter import Letter
 from Word import Word
 from Grid import Grid
