@@ -69,7 +69,6 @@ class Session(object):
         }
 
         resp = requests.post('{}/game/resume'.format(self.SERVER), data=data).json()
-        print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
 
         if 'invitesPending' in resp:
             for invite in resp['invitesPending']:
@@ -85,7 +84,6 @@ class Session(object):
 
         while True:
             resp = requests.post(self.SERVER_LISTEN, data, timeout=None).json()
-            print('-'*10 + '\n' + json.dumps(resp, sort_keys=True, indent=4))
 
             if 'gameList' in resp:
                 (on_list or self.parse_game_list)(resp['gameList'])
@@ -94,6 +92,9 @@ class Session(object):
             if 'invite' in resp:
                 func = on_invite or self.invite_accept
                 list(map(func, resp['invite']['invitesPending']))
+
+            for id, game in self.instances.items():
+                game.play()
 
     def invite_accept(self, pending):
         url = "{}/game/invitation".format(self.SERVER)

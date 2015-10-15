@@ -51,10 +51,8 @@ class Game(object):
         if len(words) == 0:
             self.swap()
         else:
-            for word in words:
-                if self.submit_word(word):
-                    return
-            self.swap()  # in case we couldn't play anything
+            if self.submit_word(words[0]):
+                return
 
     def submit_word(self, word):
         assert isinstance(word, Word)
@@ -69,6 +67,7 @@ class Game(object):
         url = "{}/game/play".format(self.SERVER)
 
         res = requests.post(url, data).json()
+        print(res)
         if 'game' in res:
             self.instance = res['game']
 
