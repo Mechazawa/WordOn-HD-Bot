@@ -61,7 +61,7 @@ class Session(object):
         }
 
         resp = Util.post('{}/account/login'.format(Session.SERVER), data=data)
-        return Session(resp.json()['user']['authToken'])
+        return Session(resp['user']['authToken'])
 
     def resume(self):
         self.logger.info('Resuming connection')
