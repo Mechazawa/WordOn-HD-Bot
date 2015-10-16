@@ -1,12 +1,10 @@
 from enum import Enum
 from logging import Logger
-import requests
 from string import ascii_letters, digits
 from random import choice
 from hashlib import md5
 from Game import Game
-import json
-from threading import Thread
+import Util
 
 
 def _random_string(length=16, pool=ascii_letters + digits):
@@ -62,7 +60,7 @@ class Session(object):
             'locale': 'nl',
         }
 
-        resp = requests.post('{}/account/login'.format(Session.SERVER), data=data)
+        resp = Util.post('{}/account/login'.format(Session.SERVER), data=data)
         return Session(resp.json()['user']['authToken'])
 
     def resume(self):
@@ -73,7 +71,7 @@ class Session(object):
             'timestamp': 0
         }
 
-        resp = requests.post('{}/game/resume'.format(self.SERVER), data=data).json()
+        resp = Util.post('{}/game/resume'.format(self.SERVER), data=data)
 
         if 'invitesPending' in resp:
             for invite in resp['invitesPending']:
@@ -89,7 +87,7 @@ class Session(object):
             self.overview_id += 1
 
             #print('beep')
-            resp = requests.post(self.SERVER_LISTEN, data, timeout=None).json()
+            resp = Util.post(self.SERVER_LISTEN, data, timeout=None)
             #print(json.dumps(resp, indent=4))
             if 'gameList' in resp:
                 (on_list or self.parse_game_list)(resp['gameList'])
@@ -114,7 +112,7 @@ class Session(object):
             'tilesetId': 0,
         }
 
-        requests.post(url, data)
+        Util.post(url, data)
 
     def parse_game_list(self, data):
         for game in data:

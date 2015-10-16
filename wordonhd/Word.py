@@ -63,4 +63,4 @@ class Word(object):
         return words
 
     def __str__(self):
-        return ','.join(l.__str__() for l in self._letters)
+        return ''.join(l.__str__() for l in self._letters)

@@ -1,8 +1,8 @@
-import requests
 from Word import Word
 from Letter import Letter
 from Grid import Grid
 from time import sleep
+import Util
 
 
 class Game(object):
@@ -22,7 +22,7 @@ class Game(object):
             'newchats': 0,
         }
 
-        resp = requests.post(self.SERVER_LISTEN, data).json()
+        resp = Util.post(self.SERVER_LISTEN, data)
         self.instance = resp['game']
 
     @property
@@ -80,11 +80,13 @@ class Game(object):
         }
         url = "{}/game/play".format(self.SERVER)
 
-        res = requests.post(url, data).json()
+        res = Util.post(url, data)
         valid = 'game' in res
 
         if valid:
             self.instance = res['game']
+        else:
+            print(res)
 
         return valid
 
@@ -96,4 +98,4 @@ class Game(object):
 
         print('swapping')
         url = "{}/game/swap".format(self.SERVER)
-        requests.post(url, data)
+        Util.post(url, data)

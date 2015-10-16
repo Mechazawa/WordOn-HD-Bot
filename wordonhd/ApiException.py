@@ -48,7 +48,7 @@ class ApiErrorCode(Enum):
 class ApiException(Exception):
     def __init__(self, code):
         if isinstance(code, dict):
-            code = code['error']
+            code = int(code['error'])
         name = ApiErrorCode(code).name
         message = 'ApiException: {name}, {code}'.format(name=name, code=code)
         super(ApiException, self).__init__(message)
