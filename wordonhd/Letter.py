@@ -21,7 +21,11 @@ class Letter(object):
 
     @property
     def value(self):
-        return list(filter(lambda x: self.letter in x[0], self._values.items()))[0][1]
+        is_wildcard = self.letter == '#'
+        real = self.letter if not is_wildcard else self.real
+
+        val = list(filter(lambda x: real in x[0], self._values.items()))[0][1]
+        return -val if is_wildcard else val
 
     @staticmethod
     def from_raw(data):
