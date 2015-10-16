@@ -1,4 +1,7 @@
 from enum import Enum
+from requests import Response
+from urllib.parse import unquote
+import json
 
 
 class ApiErrorCode(Enum):
@@ -47,8 +50,19 @@ class ApiErrorCode(Enum):
 
 class ApiException(Exception):
     def __init__(self, code):
+        message = ''
+
         if isinstance(code, dict):
             code = int(code['error'])
+        if isinstance(code, Response):
+            body = code.request.body
+            body = dict(list((x.split('=')[0], unquote(x.split('=')[1]))
+                             for x in body.split('&')))
+            message = body
+            code = int(code.json()['error'])
+
         name = ApiErrorCode(code).name
-        message = 'ApiException: {name}, {code}'.format(name=name, code=code)
+        message = "{name}, {code}\n{extra}".format(name=name, code=code, extra=message)
+        message = message.strip()
+
         super(ApiException, self).__init__(message)

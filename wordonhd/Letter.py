@@ -17,7 +17,7 @@ class Letter(object):
 
     @property
     def weight(self):
-        return self.value + self.wordon * 100
+        return self.value + (self.wordon * 100)
 
     @property
     def value(self):

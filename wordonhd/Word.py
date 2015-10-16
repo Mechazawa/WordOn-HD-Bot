@@ -12,19 +12,23 @@ class Word(object):
     @property
     def value(self):
         value = self._grid.score(self._letters)
-        missing = list(filter(lambda x: x not in self._letters, self._wordons))
 
+        missing = self.missing_wordons
         value -= sum(map(lambda x: x.value, missing))
 
         if len(missing) == 0:
             value *= 2
         return value
 
+    @property
+    def missing_wordons(self):
+        return list(filter(lambda x: x not in self._letters, self._wordons))
+
     @staticmethod
     def find_all(letters, grid, locale='nl'):
         words = []
         file = 'wordonhd/dictionary/{}.lang'.format(locale)
-        letters.sort(key=lambda x: x.weight, reverse=True)
+        letters.sort(key=lambda x: x.weight)
         letters_raw = list(map(lambda x: x.letter, letters))
         wordons = list(filter(lambda x: x.wordon, letters))
 
@@ -63,4 +67,4 @@ class Word(object):
         return words
 
     def __str__(self):
-        return ''.join(l.__str__() for l in self._letters)
+        return ','.join(l.__str__() for l in self._letters)

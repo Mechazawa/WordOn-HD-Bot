@@ -26,3 +26,6 @@ class Grid(object):
                 wordons.append(word[i])
 
         return wordons
+
+    def __str__(self):
+        return ','.join(self._grid)

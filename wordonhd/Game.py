@@ -71,6 +71,7 @@ class Game(object):
             sleep(wait)
         print('playing {} for {} points against {}'
               .format(word.__str__(), word.value, self.gamedata['otherName']))
+        print('using ' + ','.join(x.__str__() for x in self.letters) + ' ' + word._grid.__str__())
 
         data = {
             'authToken': self.parent.authtoken,
