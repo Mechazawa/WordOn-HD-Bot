@@ -2,7 +2,7 @@ from Word import Word
 from Letter import Letter
 from Grid import Grid
 from time import sleep
-import Util
+from Util import post
 
 
 class Game(object):
@@ -22,7 +22,7 @@ class Game(object):
             'newchats': 0,
         }
 
-        resp = Util.post(self.SERVER_LISTEN, data)
+        resp = post(self.SERVER_LISTEN, data)
         self.instance = resp['game']
 
     @property
@@ -68,7 +68,7 @@ class Game(object):
         assert isinstance(word, Word)
         if wait > 0:
             print('Waiting {}s'.format(wait))
-            sleep(wait)
+            #sleep(wait)
         print('playing {} for {} points against {}'
               .format(word.__str__(), word.value, self.gamedata['otherName']))
         print('using ' + ','.join(x.__str__() for x in self.letters) + ' ' + word._grid.__str__())
@@ -81,7 +81,7 @@ class Game(object):
         }
         url = "{}/game/play".format(self.SERVER)
 
-        res = Util.post(url, data)
+        res = post(url, data)
         valid = 'game' in res
 
         if valid:
@@ -99,4 +99,4 @@ class Game(object):
 
         print('swapping')
         url = "{}/game/swap".format(self.SERVER)
-        Util.post(url, data)
+        post(url, data)

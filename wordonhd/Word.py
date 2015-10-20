@@ -68,3 +68,6 @@ class Word(object):
 
     def __str__(self):
         return ','.join(l.__str__() for l in self._letters)
+
+    def __repr__(self):
+        return "<Word {0} {0.value}>".format(self)

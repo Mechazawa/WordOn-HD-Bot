@@ -4,7 +4,7 @@ from string import ascii_letters, digits
 from random import choice
 from hashlib import md5
 from Game import Game
-import Util
+from Util import post
 
 
 def _random_string(length=16, pool=ascii_letters + digits):
@@ -60,7 +60,7 @@ class Session(object):
             'locale': 'nl',
         }
 
-        resp = Util.post('{}/account/login'.format(Session.SERVER), data=data)
+        resp = post('{}/account/login'.format(Session.SERVER), data=data)
         return Session(resp['user']['authToken'])
 
     def resume(self):
@@ -71,7 +71,7 @@ class Session(object):
             'timestamp': 0
         }
 
-        resp = Util.post('{}/game/resume'.format(self.SERVER), data=data)
+        resp = post('{}/game/resume'.format(self.SERVER), data=data)
 
         if 'invitesPending' in resp:
             for invite in resp['invitesPending']:
@@ -87,7 +87,7 @@ class Session(object):
             self.overview_id += 1
 
             #print('beep')
-            resp = Util.post(self.SERVER_LISTEN, data, timeout=None)
+            resp = post(self.SERVER_LISTEN, data, timeout=None)
             #print(json.dumps(resp, indent=4))
             if 'gameList' in resp:
                 (on_list or self.parse_game_list)(resp['gameList'])
@@ -112,7 +112,7 @@ class Session(object):
             'tilesetId': 0,
         }
 
-        Util.post(url, data)
+        post(url, data)
 
     def parse_game_list(self, data):
         for game in data:
